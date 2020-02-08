@@ -36,9 +36,7 @@ Unlike other frameworks, F3 aims to be usable - not usual.
 
 The philosophy behind the framework and its approach to software architecture is towards minimalism in structural components, avoiding application complexity and striking a balance between code elegance, application performance and programmer productivity.
 
-[![Paypal](ui/images/paypal.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
-
-![Bitcoin](ui/images/bitcoin.png)
+[![Paypal](ui/images/paypal.png)](https://www.paypal.me/fatfree)
 
 ## Table of Contents
 
@@ -55,19 +53,23 @@ The philosophy behind the framework and its approach to software architecture is
 
 [![Twitter](ui/images/twitter.png)](https://twitter.com/phpfatfree)
 
-### Version 3.5 Is Finally Released!
-
-The latest official release welcomes the summer with a bang and marks the final milestone in this version of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that consumed significant time and effort to develop and refine, version 3.5 is now available for download. This edition is packed with a bunch of new usability and security features.
+### Get the latest release!
 
 F3 has a stable enterprise-class architecture. Unbeatable performance, user-friendly features and a lightweight footprint. What more can you ask for?
+To get this package, simply download this package or visit the [fatfree-core](https://github.com/bcosca/fatfree-core) repository to find the latest edge-version.
 
-It is highly recommended that experienced users develop new applications with this version to take advantage of the latest code base and its significant improvements.
+For all composer users out there:
 
-## Introducing FatFreeFramework.com
+*  start a new project using `composer create-project bcosca/fatfree:dev-init`
+*  add fatfree to your existing project with `composer require bcosca/fatfree-core`
 
-**Detailed API documentation with lots of code examples and a graphic guide can now be found at [http://fatfreeframework.com/](http://fatfreeframework.com/).**
+It is highly recommended that experienced users develop new applications with the latest version to take advantage of an updated code base and ongoing improvements.
 
-Of course this handy online reference is powered by F3! It showcases the framework's capability and performance. Check it out now.
+## Please visit FatFreeFramework.com
+
+**The most up-to-date user-guide and detailed API documentation with lots of code examples and a graphic guide can be found at [fatfreeframework.com/](http://fatfreeframework.com/).**
+
+Of course this handy online reference is powered by F3! It showcases the framework's capability and performance. Check it out now. If you'd like to read it at github directly, you can find the websites content at [github.com/F3Community/F3com-data](https://github.com/F3Community/F3com-data)
 
 ## Getting Started
 
@@ -85,7 +87,7 @@ Unzip the contents of the distribution package anywhere in your hard drive. By d
 
 **Important:** If your application uses APC, Memcached, WinCache, XCache, or a filesystem cache, clear all cache entries first before overwriting an older version of the framework with a new one.
 
-Make sure you're running the right version of PHP. F3 does not support versions earlier than PHP 5.3. You'll be getting syntax errors (false positives) all over the place because new language constructs and closures/anonymous functions are not supported by outdated PHP versions. To find out, open your console (`bash` shell on GNU/Linux, or `cmd.exe` on Windows):-
+Make sure you're running the right version of PHP. F3 does not support versions earlier than PHP 5.4. You'll be getting syntax errors (false positives) all over the place because new language constructs and closures/anonymous functions are not supported by outdated PHP versions. To find out, open your console (`bash` shell on GNU/Linux, or `cmd.exe` on Windows):-
 
 ```
 /path/to/php -v
@@ -94,12 +96,13 @@ Make sure you're running the right version of PHP. F3 does not support versions 
 PHP will let you know which particular version you're running and you should get something that looks similar to this:-
 
 ```
-PHP 5.3.15 (cli) (built: Jul 20 2012 00:20:38)
-Copyright (c) 1997-2012 The PHP Group
-Zend Engine v2.3.0, Copyright (c) 1998-2012 Zend Technologies
+PHP 5.4.30 (cli) (built: Jul 22 2014 21:34:41)
+Copyright (c) 1997-2014 The PHP Group
+Zend Engine v2.4.0, Copyright (c) 1998-2014 Zend Technologies
+    with Xdebug v2.2.5, Copyright (c) 2002-2014, by Derick Rethans
 ```
 
-Upgrade if necessary and come back here if you've made the jump to PHP 5.3 or a later release. If you need a PHP 5.3+ hosting service provider, try one of these services:
+Upgrade if necessary and come back here if you've made the jump to PHP 5.4 or a later release. If you need a PHP 5.4+ hosting service provider, try one of these services:
 
 * [A2 Hosting](http://www.a2hosting.com/2461-15-1-72.html)
 * [DreamHost](http://www.dreamhost.com/r.cgi?665472)
@@ -121,6 +124,19 @@ $f3->run();
 ```
 
 Prepend `base.php` on the first line with the appropriate path. Save the above code fragment as `index.php` in your Web root folder. We've written our first Web page.
+
+Using composer? Then just run `composer require bcosca/fatfree` and use the following:
+
+``` php
+require 'vendor/autoload.php';
+$f3 = \Base::instance();
+$f3->route('GET /',
+    function() {
+        echo 'Hello, world!';
+    }
+);
+$f3->run();
+```
 
 The first command tells the PHP interpreter that you want the framework's functions and features available to your application. The `$f3->route()` method informs Fat-Free that a Web page is available at the relative URL indicated by the slash (`/`). Anyone visiting your site located at `http://www.example.com/` will see the `'Hello, world!'` message because the URL `/` is equivalent to the root page. To create a route that branches out from the root page, like `http://www.example.com/inside/`, you can define another route with a simple `GET /inside` string.
 
@@ -281,11 +297,22 @@ The above command will start routing all requests to the Web root `/var/www`. If
 If you're using Apache, make sure you activate the URL rewriting module (mod_rewrite) in your apache.conf (or httpd.conf) file. You should also create a .htaccess file containing the following:-
 
 ``` apache
+# Enable rewrite engine and route requests to framework
 RewriteEngine On
+
+# Some servers require you to specify the `RewriteBase` directive
+# In such cases, it should be the path (relative to the document root)
+# containing this .htaccess file
+#
+# RewriteBase /
+
+RewriteRule ^(tmp)\/|\.ini$ - [R=404]
+
+RewriteCond %{REQUEST_FILENAME} !-l
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME} !-l
 RewriteRule .* index.php [L,QSA]
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
 ```
 
 The script tells Apache that whenever an HTTP request arrives and if no physical file (`!-f`) or path (`!-d`) or symbolic link (`!-l`) can be found, it should transfer control to `index.php`, which contains our main/front controller, and which in turn, invokes the framework.
@@ -401,7 +428,7 @@ If someone tries to access the URL `http://www.example.com/obsoletepage` using e
 
 Rerouting can be particularly useful when you need to do some maintenance work on your site. You can have a route handler that informs your visitors that your site is offline for a short period.
 
-HTTP redirects are indispensable but they can also be expensive. As much as possible, refrain from using `$f3->reroute()` to send a user to another page on the same Web site if you can direct the flow of your application by invoking the function or method that handles the target route. However, this approach will not change the URL on the address bar of the user's Web browser. If this is not the behavior you want and you really need to send a user to another page, in instances like successful submission of a form or after a user has been authenticated, Fat-Free sends an `HTTP 303 See Other` header. For all other attempts to reroute to another page or site, the framework sends an `HTTP 301 Moved Permanently` header.
+HTTP redirects are indispensable but they can also be expensive. As much as possible, refrain from using `$f3->reroute()` to send a user to another page on the same Web site if you can direct the flow of your application by invoking the function or method that handles the target route. However, this approach will not change the URL on the address bar of the user's Web browser. If this is not the behavior you want and you really need to send a user to another page, in instances like successful submission of a form or after a user has been authenticated, Fat-Free sends an `HTTP 302 Found` header. For all other attempts to reroute to another page or site, the framework sends an `HTTP 301 Moved Permanently` header.
 
 ### Triggering a 404
 
@@ -458,7 +485,7 @@ $f3->set('AUTOLOAD','admin/autoload/; user/autoload/; default/');
 
 ### Working with Namespaces
 
-`AUTOLOAD` allows class hierarchies to reside in similarly-named subfolders, so if you want the framework to autoload a PHP 5.3 namespaced class that's invoked in the following manner:-
+`AUTOLOAD` allows class hierarchies to reside in similarly-named subfolders, so if you want the framework to autoload a PHP 5.4 namespaced class that's invoked in the following manner:-
 
 ``` php
 $f3->set('AUTOLOAD','autoload/');
@@ -552,7 +579,11 @@ Variables defined in Fat-Free are global, i.e. they can be accessed by any MVC c
 To assign a value to a Fat-Free variable:
 
 ``` php
-$f3->set('var',value)
+$f3->set('var',value); // or
+$f3->var=value;
+
+$f3->set('hello.world','good morning'); // translates to: 'hello' == array('world'=>'good morning')
+$f3->{'hello.world'}='good morning'; // same as prior statement
 ```
 
 **Note:** Fat-Free variables accept all PHP data types, including objects and anonymous functions.
@@ -561,29 +592,32 @@ To set several variables at once:
 
 ``` php
 $f3->mset(
-    array(
+    [
         'foo'=>'bar',
         'baz'=>123
-    )
+    ]
 );
 ```
 
 To retrieve the value of a framework variable named `var`:-
 
 ``` php
-$f3->get('var')
+echo $f3->get('var'); // or
+echo $f3->var;
 ```
 
 To remove a Fat-Free variable from memory if you no longer need it (discard it so it doesn't interfere with your other functions/methods), use the method:-
 
 ``` php
-$f3->clear('var')
+$f3->clear('var'); // or
+unset($f3->var);
 ```
 
 To find out if a variable has been previously defined:-
 
 ``` php
-$f3->exists('var')
+$f3->exists('var') //
+isset($f3->var)
 ```
 
 ### Globals
@@ -628,14 +662,14 @@ echo $f3->get('b'); // returns the same string: 'firecracker'
 F3 also provides some primitive methods for working with array variables:-
 
 ``` php
-$f3->set('colors',array('red','blue','yellow'));
+$f3->set('colors',['red','blue','yellow']);
 $f3->push('colors','green'); // works like PHP's array_push()
 echo $f3->pop('colors'); // returns 'green'
 
 $f3->unshift('colors','purple'); // similar to array_unshift()
 echo $f3->shift('colors'); // returns 'purple'
 
-$f3->set('grays',array('light','dark'));
+$f3->set('grays',['light','dark']);
 $result=$f3->merge('colors','grays'); // merges the two arrays
 ```
 
@@ -723,9 +757,9 @@ Instead of creating a PHP script that contains the following sample code:-
 ``` php
 $f3->set('num',123);
 $f3->set('str','abc');
-$f3->set('hash',array('x'=>1,'y'=>2,'z'=>3));
-$f3->set('items',array(7,8,9));
-$f3->set('mix',array('this',123.45,FALSE));
+$f3->set('hash',['x'=>1,'y'=>2,'z'=>3]);
+$f3->set('items',[7,8,9]);
+$f3->set('mix',['this',123.45,FALSE]);
 ```
 
 You can construct a configuration file that does the same thing:-
@@ -872,10 +906,10 @@ But what about arrays? Fat-Free recognizes arrays and you can employ them in you
 And populate the `@buddy` array in your PHP code before serving the template:-
 
 ``` php
-$f3->set('buddy',array('Tom','Dick','Harry'));
+$f3->set('buddy',['Tom','Dick','Harry']);
 ```
 
-However, if you simply insert `{{ @buddy }}` in your template, PHP 5.3 will replace it with `'Array'` because it converts the token to a string. PHP 5.4, on the other hand, will generate an `Array to string conversion` notice at runtime.
+However, if you simply insert `{{ @buddy }}` in your template, PHP 5.4 will replace it with `'Array'` because it converts the token to a string. PHP 5.4, on the other hand, will generate an `Array to string conversion` notice at runtime.
 
 F3 allows you to embed expressions in templates. These expressions may take on various forms, like arithmetic calculations, boolean expressions, PHP constants, etc. Here are a few examples:-
 
@@ -998,7 +1032,7 @@ Fat-Free can also handle repetitive HTML blocks:-
 The `group` attribute `@fruits` inside the `<repeat>` directive must be an array and should be set in your PHP code accordingly:-
 
 ``` php
-$f3->set('fruits',array('apple','orange ',' banana'));
+$f3->set('fruits',['apple','orange ',' banana']);
 ```
 
 Nothing is gained by assigning a value to `@fruit` in your application code. Fat-Free ignores any preset value it may have because it uses the variable to represent the current item during iteration over the group. The output of the above HTML template fragment and the corresponding PHP code becomes:-
@@ -1028,10 +1062,10 @@ Apply the following F3 command:-
 
 ``` php
 $f3->set('div',
-    array(
-        'coffee'=>array('arabica','barako','liberica','kopiluwak'),
-        'tea'=>array('darjeeling','pekoe','samovar')
-    )
+    [
+        'coffee'=>['arabica','barako','liberica','kopiluwak'],
+        'tea'=>['darjeeling','pekoe','samovar']
+    ]
 );
 ```
 
@@ -1163,23 +1197,23 @@ First, create a dictionary file with the following structure (one file per langu
 
 ``` php
 <?php
-return array(
+return [
     'love'=>'I love F3',
     'today'=>'Today is {0,date}',
     'pi'=>'{0,number}',
     'money'=>'Amount remaining: {0,number,currency}'
-);
+];
 ```
 
 Save it as `dict/en.php`. Let's create another dictionary, this time for German. Save the file as `dict/de.php`:-
 
 ``` php
 <?php
-return array(
+return [
     'love'=>'Ich liebe F3',
     'today'=>'Heute ist {0,date}',
     'money'=>'Restbetrag: {0,number,currency}'
-);
+];
 ```
 
 Dictionaries are nothing more than key-value pairs. F3 automatically instantiates framework variables based on the keys in the language files. As such, it's easy to embed these variables as tokens in your templates. Using the F3 template engine:-
@@ -1316,11 +1350,11 @@ Here's another example. Instead of a single statement provided as an argument to
 
 ``` php
 $db->exec(
-    array(
+    [
         'DELETE FROM diet WHERE food="cola"',
         'INSERT INTO diet (food) VALUES ("carrot")',
         'SELECT * FROM diet'
-    )
+    ]
 );
 ```
 
@@ -1376,16 +1410,16 @@ Our example in the previous section will be a lot safer from SQL injection if wr
 
 ``` php
 $db->exec(
-    array(
+    [
         'DELETE FROM diet WHERE food=:name',
         'INSERT INTO diet (food) VALUES (?)',
         'SELECT * FROM diet'
-    ),
-    array(
+    ],
+    [
         array(':name'=>'cola'),
         array(1=>'carrot'),
         NULL
-    )
+    ]
 );
 ```
 
@@ -1420,7 +1454,7 @@ To retrieve a record from our table:-
 
 ``` php
 $user=new DB\SQL\Mapper($db,'users');
-$user->load(array('userID=?','tarzan'));
+$user->load(['userID=?','tarzan']);
 ```
 
 The first line instantiates a data mapper object that interacts with the `users` table in our database. Behind the scene, F3 retrieves the structure of the `users` table and determines which field(s) are defined as primary key(s). At this point, the mapper object contains no data yet (dry state) so `$user` is nothing more than a structured object - but it contains the methods it needs to perform the basic CRUD operations and some extras. To retrieve a record from our users table with a `userID` field containing the string value `tarzan`, we use the `load() method`. This process is called "auto-hydrating" the data mapper object.
@@ -1432,7 +1466,7 @@ If you prefer working with NoSQL databases, the similarities in query syntax are
 ``` php
 $db=new DB\Mongo('mongodb://localhost:27017','testdb');
 $user=new DB\Mongo\Mapper($db,'users');
-$user->load(array('userID'=>'tarzan'));
+$user->load(['userID'=>'tarzan']);
 ```
 
 With Jig, the syntax is similar to F3's template engine:-
@@ -1440,7 +1474,7 @@ With Jig, the syntax is similar to F3's template engine:-
 ``` php
 $db=new DB\Jig('db/data/',DB\Jig::FORMAT_JSON);
 $user=new DB\Jig\Mapper($db,'users');
-$user->load(array('@userID=?','tarzan'));
+$user->load(['@userID=?','tarzan']);
 ```
 
 ### The Smart SQL ORM
@@ -1467,7 +1501,7 @@ $user=new DB\SQL\Mapper($db,'users');
 // or $user=new DB\Mongo\Mapper($db,'users');
 // or $user=new DB\Jig\Mapper($db,'users');
 $user->userID='jane';
-$user->password=md5('secret');
+$user->password=password_hash('secret', PASSWORD_BCRYPT, [ 'cost' => 12 ]);
 $user->visits=0;
 $user->save();
 ```
@@ -1479,7 +1513,7 @@ A mapper object will not be empty after a `save()`. If you wish to add a new rec
 ``` php
 $user->reset();
 $user->userID='cheetah';
-$user->password=md5('unknown');
+$user->password=password_hash('unknown', PASSWORD_BCRYPT, [ 'cost' => 12 ]);
 $user->save();
 ```
 
@@ -1493,7 +1527,7 @@ To remove a mapped record from our table, invoke the `erase()` method on an auto
 
 ``` php
 $user=new DB\SQL\Mapper($db,'users');
-$user->load(array('userID=? AND password=?','cheetah','ch1mp'));
+$user->load(['userID=? AND password=?','cheetah','ch1mp']);
 $user->erase();
 ```
 
@@ -1501,7 +1535,7 @@ Jig's query syntax would be slightly similar:-
 
 ``` php
 $user=new DB\Jig\Mapper($db,'users');
-$user->load(array('@userID=? AND @password=?','cheetah','chimp'));
+$user->load(['@userID=? AND @password=?','cheetah','chimp']);
 $user->erase();
 ```
 
@@ -1509,7 +1543,7 @@ And the MongoDB equivalent would be:-
 
 ``` php
 $user=new DB\Mongo\Mapper($db,'users');
-$user->load(array('userID'=>'cheetah','password'=>'chimp'));
+$user->load(['userID'=>'cheetah','password'=>'chimp']);
 $user->erase();
 ```
 
@@ -1539,7 +1573,7 @@ On the other hand, if we wanted to retrieve a record and copy the field values t
 
 ``` php
 $f3->set('user',new DB\SQL\Mapper($db,'users'));
-$f3->get('user')->load(array('userID=?','jane'));
+$f3->get('user')->load(['userID=?','jane']);
 $f3->get('user')->copyTo('POST');
 ```
 
@@ -1559,11 +1593,11 @@ By default, a data mapper's `load()` method retrieves only the first record that
 $user=new DB\SQL\Mapper($db,'users');
 $user->load('visits>3');
 // Rewritten as a parameterized query
-$user->load(array('visits>?',3));
+$user->load(['visits>?',3]);
 
 // For MongoDB users:-
 // $user=new DB\Mongo\Mapper($db,'users');
-// $user->load(array('visits'=>array('$gt'=>3)));
+// $user->load(['visits'=>['$gt'=>3]]);
 
 // If you prefer Jig:-
 // $user=new DB\Jig\Mapper($db,'users');
@@ -1587,12 +1621,12 @@ The `load()` method accepts a second argument: an array of options containing ke
 
 ``` php
 $user->load(
-    array('visits>?',3),
-    array(
+    ['visits>?',3],
+    [
         'order'=>'userID DESC'
         'offset'=>5,
         'limit'=>3
-    )
+    ]
 );
 ```
 
@@ -1608,7 +1642,7 @@ LIMIT 3 OFFSET 5;
 This is one way of presenting data in small chunks. Here's another way of paginating results:-
 
 ``` php
-$page=$user->paginate(2,5,array('visits>?',3));
+$page=$user->paginate(2,5,['visits>?',3]);
 ```
 
 In the above scenario, F3 will retrieve records that match the criteria `'visits>3'`. It will then limit the results to 5 records (per page) starting at page offset 2 (0-based). The framework will return an array consisting of the following elements:-
@@ -1643,7 +1677,7 @@ No `totalprice` field exists, so we can tell the framework to request from the d
 ``` php
 $item=new DB\SQL\Mapper($db,'products');
 $item->totalprice='unitprice*quantity';
-$item->load(array('productID=:pid',':pid'=>'apple'));
+$item->load(['productID=:pid',':pid'=>'apple']);
 echo $item->totalprice;
 ```
 
@@ -1680,19 +1714,19 @@ Remember that a virtual field must be defined prior to data retrieval. The ORM d
 If you have no need for record-by-record navigation, you can retrieve an entire batch of records in one shot:-
 
 ``` php
-$frequentUsers=$user->find(array('visits>?',3),array('order'=>'userID'));
+$frequentUsers=$user->find(['visits>?',3],['order'=>'userID']);
 ```
 
 Jig mapper's query syntax has a slight resemblance:-
 
 ``` php
-$frequentUsers=$user->find(array('@visits>?',3),array('order'=>'userID'));
+$frequentUsers=$user->find(['@visits>?',3],['order'=>'userID']);
 ```
 
 The equivalent code using the MongoDB mapper:-
 
 ``` php
-$frequentUsers=$user->find(array('visits'=>array('$gt'=>3)),array('userID'=>1));
+$frequentUsers=$user->find(['visits'=>['$gt'=>3]],['userID'=>1]);
 ```
 
 The `find()` method searches the `users` table for records that match the criteria, sorts the result by `userID` and returns the result as an array of mapper objects. `find('visits>3')` is different from `load('visits>3')`. The latter refers to the current `$user` object. `find()` does not have any effect on `skip()`.
@@ -1704,12 +1738,12 @@ The `find()` method has the following syntax:-
 ``` php
 find(
     $criteria,
-    array(
+    [
         'group'=>'foo',
         'order'=>'foo,bar',
         'limit'=>5,
         'offset'=>0
-    )
+    ]
 );
 ```
 
@@ -1732,7 +1766,7 @@ echo $array['city'].', '.$array['country'];
 To retrieve the number of records in a table that match a certain condition, use the `count()` method.
 
 ``` php
-if (!$user->count(array('visits>?',10)))
+if (!$user->count(['visits>?',10]))
     echo 'We need a better ad campaign!';
 ```
 
@@ -1742,12 +1776,12 @@ There's also a `select()` method that's similar to `find()` but provides more fi
 select(
     'foo, bar, MIN(baz) AS lowest',
     'foo > ?',
-    array(
+    [
         'group'=>'foo, bar',
         'order'=>'baz ASC',
         'limit'=>5,
         'offset'=>3
-    )
+    ]
 );
 ```
 
@@ -1779,7 +1813,7 @@ class Vendor extends DB\SQL\Mapper {
     // Specialized query
     function listByCity() {
         return $this->select(
-            'vendorID,name,city',array('order'=>'city DESC'));
+            'vendorID,name,city',['order'=>'city DESC']);
         /*
             We could have done the the same thing with plain vanilla SQL:-
             return $this->db->exec(
@@ -1824,7 +1858,7 @@ Your application code becomes simple because it does not have to maintain two ma
 
 ``` php
 $combined=new DB\SQL\Mapper($db,'combined');
-$combined->load(array('project=?',123));
+$combined->load(['project=?',123]);
 echo $combined->name;
 ```
 
@@ -1866,7 +1900,7 @@ This simple example sends an HTTP request to the page located at www.google.com 
 ``` php
 $host='localhost:5984';
 $web->request($host.'/_all_dbs'),
-$web->request($host.'/testdb/',array('method'=>'PUT'));
+$web->request($host.'/testdb/',['method'=>'PUT']);
 ```
 
 You may have noticed that you can pass an array of additional options to the `request()` method:-
@@ -1875,20 +1909,20 @@ You may have noticed that you can pass an array of additional options to the `re
 $web->request(
     'https://www.example.com:443?'.
     http_build_query(
-        array(
+        [
             'key1'=>'value1',
             'key2'=>'value2'
-        )
+        ]
     ),
-    array(
-        'headers'=>array(
+    [
+        'headers'=>[
             'Accept: text/html,application/xhtml+xml,application/xml',
             'Accept-Language: en-us'
-        ),
+        ],
         'follow_location'=>FALSE,
         'max_redirects'=>30,
         'ignore_errors'=>TRUE
-    )
+    ]
 );
 ```
 
@@ -2117,7 +2151,7 @@ $f3->mock('GET /test?foo=bar');
 To mock a POST request and submit a simulated HTML form:-
 
 ``` php
-$f3->mock('POST /test',array('foo'=>'bar'));
+$f3->mock('POST /test',['foo'=>'bar']);
 ```
 
 ### Expecting the Worst that can Happen
@@ -2387,7 +2421,7 @@ Once you get the hang of testing the smallest units of your application, you can
 <repeat
     group="{{ array @group|expr }}"
     [ key="{{ scalar @key }}" ]
-    value="{{ mixed @value }}
+    value="{{ mixed @value }}"
     [ counter="{{ scalar @key }}" ]>
     text-block
 </repeat>
@@ -2417,19 +2451,20 @@ The most up-to-date documentation is located at [http://fatfreeframework.com/](h
 
 ## Support and Licensing
 
-Technical support is available at the official discussion forum: [`https://groups.google.com/forum/#!forum/f3-framework`](https://groups.google.com/forum/#!forum/f3-framework). If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode `#fatfree` channel (`chat.freenode.net`). Visit [`http://webchat.freenode.net/`](http://webchat.freenode.net/) to join the conversation. You can also download the [Firefox Chatzilla](https://addons.mozilla.org/en-US/firefox/addon/chatzilla/) add-on or [Pidgin](http://www.pidgin.im/) if you don't have an IRC client so you can participate in the live chat.
+Technical support is available at the official discussion forum: [`https://groups.google.com/forum/#!forum/f3-framework`](https://groups.google.com/forum/#!forum/f3-framework). If you need live support, you can talk to the development team and other members of the F3 community via [Slack](https://fatfreeframework-slack.herokuapp.com/) or IRC. We're on the FreeNode `#fatfree` channel (`chat.freenode.net`). Visit [`http://webchat.freenode.net/`](http://webchat.freenode.net/) to join the conversation. You can also download the [Firefox Chatzilla](https://addons.mozilla.org/en-US/firefox/addon/chatzilla/) add-on or [Pidgin](http://www.pidgin.im/) if you don't have an IRC client so you can participate in the live chat.
+You can also find help at [Stack Overflow](http://stackoverflow.com/questions/tagged/fat-free-framework)
 
 ### Nightly Builds
 
-F3 uses Git for version control. To clone the code repository on GitHub:-
+F3 uses Git for version control. To clone the latest code repository on GitHub:
 
 ``` bash
-git clone git://github.com/bcosca/fatfree.git
+git clone git://github.com/bcosca/fatfree-core.git
 ```
 
-If all you want is a zipball, grab it [**here**](https://github.com/bcosca/fatfree/archive/dev.zip).
+If all you want is a zipball of our test bench with all unit tests, grab it [**here**](https://github.com/bcosca/fatfree/archive/dev.zip).
 
-To file a bug report, visit [`https://github.com/bcosca/fatfree/issues`](https://github.com/bcosca/fatfree/issues).
+To file a bug report, visit [`https://github.com/bcosca/fatfree-core/issues`](https://github.com/bcosca/fatfree-core/issues).
 
 ### Fair Licensing
 
@@ -2442,9 +2477,10 @@ If you feel that this software is one great weapon to have in your programming a
 The Fat-Free Framework is community-driven software. It can't be what it is today without the help and support from the following people and organizations:
 
 * GitHub
+* Stehlik & Company
+* bodalgo.com
 * Square Lines, LLC
 * Mirosystems
-* Stehlik & Company
 * Talis Group, Ltd.
 * Tecnilógica
 * G Holdings, LLC
@@ -2453,11 +2489,13 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * PHP Experts, Inc.
 * Meins und Vogel GmbH
 * Online Prepaid Services
+* Frugal Photographer
 * Christian Knuth
+* Florent Racineux
 * Sascha Ohms
 * Lars Brandi Jensen
-* Jermaine Maree
 * Eyðun Lamhauge
+* Jermaine Maree
 * Sergey Zaretsky
 * Daniel Kloke
 * Brian Nelson
@@ -2507,7 +2545,6 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Biswajit Nayak
 * R Mohan
 * Michael Messner
-* Florent Racineux
 * Jason Borseth
 * Dmitrij Chernov
 * Marek Toman
@@ -2545,17 +2582,35 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Steve Cove
 * Steven Witten
 * Silvan Seeholzer
+* Toni Schönbuchner
+* Marek Toman
+* Dexter Freivald
+* Chad West
+* Bond Akinmade
+* AlpiSol - Ernaldo Pisati
+* Adam Wilkins
+* Mihai Flaviu Molnar
+* Carolina R Molla
+* Andres Espinoza Arce
+* Jan Kremlacek
+* Eric Schultz
+* Ricardo Andrade
+* Derek Loewen
+* Michael Nelson
+* Denis Bach
+* Lenard Osmani
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
-[![Paypal](ui/images/paypal.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
-
-![Bitcoin](ui/images/bitcoin.png)
+[![Paypal](ui/images/paypal.png)](https://www.paypal.me/fatfree)
 
 ### Legal notice
 
 By making a donation to this project you signify that you acknowledged, understood, accepted, and agreed to the terms and conditions contained in this notice. Your donation to the Fat-Free Framework project is voluntary and is not a fee for any services, goods, or advantages, and making a donation to the project does not entitle you to any services, goods, or advantages. We have the right to use the money you donate to the Fat-Free Framework project in any lawful way and for any lawful purpose we see fit and we are not obligated to disclose the way and purpose to any party unless required by applicable law. Although Fat-Free Framework is free software, to our best knowledge this project does not have any tax-exempt status. The Fat-Free Framework project is neither a registered non-profit corporation nor a registered charity in any country. Your donation may or may not be tax-deductible; please consult this with your tax advisor. We will not publish/disclose your name and e-mail address without your consent, unless required by applicable law. Your donation is non-refundable.
 
-**Copyright (c) 2009-2014 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;**
+**Copyright (c) 2009-2019 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;**
 
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a0b5e3f40092429070b6647a2e5ca6ab "githalytics.com")](http://githalytics.com/bcosca/fatfree)
+## Support on Beerpay
+Hey dude! Help me out for a couple of :beers:!
+
+[![Beerpay](https://beerpay.io/bcosca/fatfree/badge.svg?style=beer-square)](https://beerpay.io/bcosca/fatfree)  [![Beerpay](https://beerpay.io/bcosca/fatfree/make-wish.svg?style=flat-square)](https://beerpay.io/bcosca/fatfree?focus=wish)
